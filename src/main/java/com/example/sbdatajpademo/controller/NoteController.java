@@ -61,6 +61,14 @@ public class NoteController {
     public List<NoteTitleDto> getAllNotesDtoOnlyTitle() {
         return noteService.getAllNotesDtoOnlyTitle();
     }
+
+/*
+    GET http://localhost:9001/notes/all/using-generic-dto-pageable?size=5&page3
+ */
+    @GetMapping("/all/using-generic-dto-pageable")
+    public Page<NoteDto> getAllNotesUsingQueryWithGenericDtoPageable(Pageable pageable) {
+        return noteService.getAllNotesUsingQueryWithGenericDtoPageable(pageable);
+    }
 }
 
 /*

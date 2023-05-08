@@ -4,6 +4,8 @@ import com.example.sbdatajpademo.dto.NoteDto;
 import com.example.sbdatajpademo.dto.NoteTitleDto;
 import com.example.sbdatajpademo.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,5 +58,10 @@ public class NoteService {
     @Transactional(readOnly = true)
     public List<NoteTitleDto> getAllNotesDtoOnlyTitle() {
         return noteRepository.findAllBy(NoteTitleDto.class);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NoteDto> getAllNotesUsingQueryWithGenericDtoPageable(Pageable pageable) {
+        return noteRepository.findAllBy(NoteDto.class, pageable);
     }
 }

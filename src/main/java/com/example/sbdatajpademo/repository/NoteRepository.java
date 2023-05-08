@@ -2,6 +2,8 @@ package com.example.sbdatajpademo.repository;
 
 import com.example.sbdatajpademo.dto.NoteDto;
 import com.example.sbdatajpademo.entity.Note;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -26,6 +28,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     // 4) using generic = the best choice because you can set needed Dto class in service layer
     <T> List<T> findAllBy(Class<T> type);
+
+    <T> Page<T> findAllBy(Class<T> type, Pageable pageable);
 }
 
 /*

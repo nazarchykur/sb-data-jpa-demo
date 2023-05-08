@@ -45,8 +45,8 @@ public class Person {
     // added EAGER only for init method in controller to randomly add Note to Person with id from 1 to 10
     // only one time to add data to DB
     @JsonManagedReference // only for test purpose when we work in controller with entities
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<Note> notes = new ArrayList<>();
 
     public void addNote(Note note) {
