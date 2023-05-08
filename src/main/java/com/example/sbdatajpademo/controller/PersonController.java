@@ -1,9 +1,12 @@
 package com.example.sbdatajpademo.controller;
 
+import com.example.sbdatajpademo.entity.Note;
 import com.example.sbdatajpademo.entity.Person;
 import com.example.sbdatajpademo.repository.PersonRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/persons")
@@ -35,13 +39,74 @@ public class PersonController {
                 .orElseThrow(() -> new EntityNotFoundException("Person not found"));
     }
 
+    @GetMapping("/{personId}/with-notes")
+    public Person getPersonByIdFetchNotes(@PathVariable Long personId) {
+        return personRepository.findByIdFetchNotes(personId);
+    }
+
+    @GetMapping("/by-id-range")
+    public List<Person> getPersonsByIdRangeFetchNotes(@RequestParam("personId1") long personId1, @RequestParam("personId2") long personId2) {
+        return personRepository.findAllByIdBetweenFetchNotes(personId1, personId2);
+    }
+
+    /*
+         Якщо ми використовуємо метод `findAllByFistName` з інтерфейсу `PersonRepository`, то для кожного персону буде
+         виконуватись окремий запит до бази даних для отримання його нотаток. Це може призвести до проблем з продуктивністю,
+         особливо якщо ми маємо велику кількість персон з багатьма нотатками.
+     */
+    @GetMapping("/by-name/without-fetch-notes")
+    public List<Person> getPersonsByNameWithoutFetchNotes(@RequestParam("firstName") String firstName) {
+        return personRepository.findAllByFistName(firstName);
+    }
+
+    /*
+        Якщо ми хочемо вигрузити персон з нотатками за один запит, то можна використати `LEFT JOIN FETCH` для з'єднання
+        таблиць `Person` та `Note`.
+     */
+    @GetMapping("/by-name/with-fetch-notes")
+    public List<Person> getPersonsByNameWithFetchNotes(@RequestParam("firstName") String firstName) {
+        return personRepository.findAllByFistNameFetchNotes(firstName);
+    }
+
 //    @PostConstruct
 //    public void init() {
-//        for (int i = 1; i < 100; i++) {
+//        for (int i = 1; i < 10; i++) {
 //            Person person = new Person();
 //            person.setFistName("FirstName" + i);
 //            person.setLastName("LastName" + i);
 //            person.setAge(i);
+//
+//            personRepository.save(person);
+//        }
+//    }
+
+    // create 20 persons and add randomly notes to them
+//    @Transactional
+//    @PostConstruct
+//    public void init() {
+//
+//        String[] firstNames = {"John", "Jane", "Michael", "Emily", "David"};
+//        String[] lastNames = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris"};
+//
+//        Random random = new Random();
+//        for (int i = 1; i <= 20; i++) {
+//            Person person = new Person();
+//            person.setFistName(firstNames[random.nextInt(firstNames.length)]);
+//            person.setLastName(lastNames[random.nextInt(lastNames.length)]);
+//            person.setAge(random.nextInt(50) + 18);
+//
+//            personRepository.save(person);
+//        }
+//
+//        // now let's add randomly to Person with id from 1 to 10
+//        List<Person> persons = personRepository.findAllByIdBetween(1L, 10L);
+//        for (int i = 1; i <= 50; i++) {
+//            Note note = new Note();
+//            note.setTitle("Title" + i);
+//
+//            Person person = persons.get(random.nextInt(persons.size()));
+////            note.setPerson(person); // don't need to explicitly set person because we use helper methods
+//            person.addNote(note);
 //
 //            personRepository.save(person);
 //        }

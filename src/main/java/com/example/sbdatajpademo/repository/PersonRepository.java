@@ -21,6 +21,53 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     List<Person> findByName(@Param("fistName") String fistName);
 
 
+//    @Query("SELECT p FROM Person p join fetch p.notes WHERE p.id = ?1")
+//    Person findByIdFetchNotes(Long id);
+
+    @Query("SELECT p FROM Person p left join fetch p.notes WHERE p.id = ?1")
+    Person findByIdFetchNotes(Long id);
+
+
+    List<Person> findAllByIdBetween(long l, long l1);
+
+    List<Person> findAllByFistName(String fistName);
+
+    /*
+        We use `LEFT JOIN FETCH` instead of `JOIN FETCH` in the `findAllByFistNameFetchNotes` query because we want to
+        include `Person` entities that do not have any associated `Note` entities in the result set.
+
+        If we used `JOIN FETCH` instead, `Person` entities without any associated `Note` entities would be excluded from
+        the result set. This is because `JOIN FETCH` performs an inner join, which only includes rows that have matching
+        records in both tables.
+
+        In general, you can use `JOIN FETCH` instead of `LEFT JOIN FETCH` when you know that all records in the left
+        table have matching records in the right table. This is often the case when you have defined a foreign key
+        constraint with `optional = false`, as you mentioned.
+
+        However, if you are not sure whether all records in the left table have matching records in the right table,
+        or if you want to include records from the left table that do not have matching records in the right table, you
+        should use `LEFT JOIN FETCH`.
+
+        In summary, you should use `LEFT JOIN FETCH` when you want to include records from the left table that do not
+        have matching records in the right table, and `JOIN FETCH` when you know that all records in the left table have
+        matching records in the right table.
+
+     */
+    @Query("SELECT DISTINCT p FROM Person p LEFT JOIN FETCH p.notes WHERE p.fistName = :fistName")
+    List<Person> findAllByFistNameFetchNotes(String fistName);
+
+    /*
+        In this example, we are using the `@Query` annotation to specify a JPQL query that selects all `Person` entities
+        with an `id` between `id1` and `id2`, and eagerly fetches their `notes` collection using a `LEFT JOIN FETCH` clause.
+
+        Note that we are using the `DISTINCT` keyword in the query to ensure that each `Person` entity is only returned
+        once, even if it has multiple `Note` entities in its `notes` collection.
+
+        With this query, you can call the `findAllByIdBetweenFetchNotes` method to retrieve a list of `Person` entities
+        with their `notes` collection eagerly fetched.
+     */
+    @Query("SELECT DISTINCT p FROM Person p LEFT JOIN FETCH p.notes WHERE p.id BETWEEN :id1 AND :id2")
+    List<Person> findAllByIdBetweenFetchNotes(@Param("id1") long id1, @Param("id2") long id2);
 }
 
 /*
