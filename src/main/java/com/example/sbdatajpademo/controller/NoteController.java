@@ -1,7 +1,10 @@
 package com.example.sbdatajpademo.controller;
 
+import com.example.sbdatajpademo.dto.NoteDto;
+import com.example.sbdatajpademo.dto.NoteTitleDto;
 import com.example.sbdatajpademo.entity.Note;
 import com.example.sbdatajpademo.repository.NoteRepository;
+import com.example.sbdatajpademo.sevice.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,12 +13,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/notes")
 @RequiredArgsConstructor
 public class NoteController {
 
     private final NoteRepository noteRepository;
+
+    private final NoteService noteService;
 
     // for example, we do not need only object Note itself, we need only some fields from this entity and some from another
     //    public List<Note> getAllNotes() {
@@ -34,6 +41,26 @@ public class NoteController {
 //    public List<NoteDto> getAllNotes() {
 //        // title, personFirstName, personLastName
 //    }
+
+    @GetMapping("/all")
+    public List<NoteDto> getAllNotes() {
+        return noteService.getAllNotes();
+    }
+
+    @GetMapping("/all/using-query-with-dto")
+    public List<NoteDto> getAllNotesUsingQueryWithDto() {
+        return noteService.getAllNotesUsingQueryWithDto();
+    }
+
+    @GetMapping("/all/using-generic-dto")
+    public List<NoteDto> getAllNotesUsingQueryWithGenericDto() {
+        return noteService.getAllNotesUsingQueryWithGenericDto();
+    }
+
+    @GetMapping("/all/using-generic-dto-only-title")
+    public List<NoteTitleDto> getAllNotesDtoOnlyTitle() {
+        return noteService.getAllNotesDtoOnlyTitle();
+    }
 }
 
 /*

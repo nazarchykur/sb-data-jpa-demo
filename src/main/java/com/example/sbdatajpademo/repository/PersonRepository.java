@@ -1,5 +1,6 @@
 package com.example.sbdatajpademo.repository;
 
+import com.example.sbdatajpademo.dto.PersonDto;
 import com.example.sbdatajpademo.entity.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,12 +14,12 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 //    List<Person> findByName(String name);
 
     // 2)
-//    @Query("SELECT p FROM Person p WHERE p.fistName = ?1")
+//    @Query("SELECT p FROM Person p WHERE p.firstName = ?1")
 //    List<Person> findByName(String name);
 
     // 3)
-    @Query("SELECT p FROM Person p WHERE p.fistName = :fistName")
-    List<Person> findByName(@Param("fistName") String fistName);
+    @Query("SELECT p FROM Person p WHERE p.firstName = :firstName")
+    List<Person> findByName(@Param("firstName") String firstName);
 
 
 //    @Query("SELECT p FROM Person p join fetch p.notes WHERE p.id = ?1")
@@ -30,10 +31,10 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
 
     List<Person> findAllByIdBetween(long l, long l1);
 
-    List<Person> findAllByFistName(String fistName);
+    List<Person> findAllByFirstName(String firstName);
 
     /*
-        We use `LEFT JOIN FETCH` instead of `JOIN FETCH` in the `findAllByFistNameFetchNotes` query because we want to
+        We use `LEFT JOIN FETCH` instead of `JOIN FETCH` in the `findAllByFirstNameFetchNotes` query because we want to
         include `Person` entities that do not have any associated `Note` entities in the result set.
 
         If we used `JOIN FETCH` instead, `Person` entities without any associated `Note` entities would be excluded from
@@ -53,8 +54,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
         matching records in the right table.
 
      */
-    @Query("SELECT DISTINCT p FROM Person p LEFT JOIN FETCH p.notes WHERE p.fistName = :fistName")
-    List<Person> findAllByFistNameFetchNotes(String fistName);
+    @Query("SELECT DISTINCT p FROM Person p LEFT JOIN FETCH p.notes WHERE p.firstName = :firstName")
+    List<Person> findAllByFirstNameFetchNotes(String firstName);
 
     /*
         In this example, we are using the `@Query` annotation to specify a JPQL query that selects all `Person` entities
@@ -68,6 +69,11 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
      */
     @Query("SELECT DISTINCT p FROM Person p LEFT JOIN FETCH p.notes WHERE p.id BETWEEN :id1 AND :id2")
     List<Person> findAllByIdBetweenFetchNotes(@Param("id1") long id1, @Param("id2") long id2);
+
+
+//    @Query("select new com.example.sbdatajpademo.dto.PersonDto(p.firstName, p.lastName, (select count(n) from Note n where n.person = p)) from Person p") // need to check if all data is correct
+@Query("select new com.example.sbdatajpademo.dto.PersonDto(p.firstName, p.lastName, count(n)) from Person p left join p.notes n group by p.id")
+    List<PersonDto> findAllWithNotesCount();
 }
 
 /*
@@ -75,11 +81,11 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     назви методу та його параметрів. Ось декілька прикладів:
 
     1. Знайти всіх людей з певним іменем:
-        @Query("SELECT p FROM Person p WHERE p.fistName = ?1")
-        List<Person> findByName(String fistName);
+        @Query("SELECT p FROM Person p WHERE p.firstName = ?1")
+        List<Person> findByName(String firstName);
 
         Цей метод можна переписати як іменований метод:
-            List<Person> findByName(String fistName);
+            List<Person> findByName(String firstName);
 
     2. Знайти всіх людей з певним іменем та віком:
 

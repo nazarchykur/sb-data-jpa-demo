@@ -1,9 +1,31 @@
 package com.example.sbdatajpademo.repository;
 
+import com.example.sbdatajpademo.dto.NoteDto;
 import com.example.sbdatajpademo.entity.Note;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface NoteRepository extends JpaRepository<Note, Long> {
+
+    // we can use one of the 4 ways below to use Dto in more efficient way:
+
+    // 1)
+//    @Query("select new com.example.sbdatajpademo.dto.NoteDto(n.title, p.firstName, p.lastName) from Note n inner join n.person p")
+//    List<NoteDto> findAllDtos();
+
+    // 2)
+//    @Query("select new com.example.sbdatajpademo.dto.NoteDto(n.title, n.person.firstName, n.person.lastName) from Note n")
+//    List<NoteDto> findAllDtos();
+
+    // 3)
+    // without using @Query because Jpa can resolve it by itself, but need to use standard JPA method name
+    // otherwise it will not work, or we need to use @Query(...)
+    List<NoteDto> findAllBy();
+
+    // 4) using generic = the best choice because you can set needed Dto class in service layer
+    <T> List<T> findAllBy(Class<T> type);
 }
 
 /*

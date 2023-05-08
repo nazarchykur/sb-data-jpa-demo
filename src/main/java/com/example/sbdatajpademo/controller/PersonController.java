@@ -1,5 +1,6 @@
 package com.example.sbdatajpademo.controller;
 
+import com.example.sbdatajpademo.dto.PersonDto;
 import com.example.sbdatajpademo.entity.Note;
 import com.example.sbdatajpademo.entity.Person;
 import com.example.sbdatajpademo.repository.PersonRepository;
@@ -50,13 +51,13 @@ public class PersonController {
     }
 
     /*
-         Якщо ми використовуємо метод `findAllByFistName` з інтерфейсу `PersonRepository`, то для кожного персону буде
+         Якщо ми використовуємо метод `findAllByFirstName` з інтерфейсу `PersonRepository`, то для кожного персону буде
          виконуватись окремий запит до бази даних для отримання його нотаток. Це може призвести до проблем з продуктивністю,
          особливо якщо ми маємо велику кількість персон з багатьма нотатками.
      */
     @GetMapping("/by-name/without-fetch-notes")
     public List<Person> getPersonsByNameWithoutFetchNotes(@RequestParam("firstName") String firstName) {
-        return personRepository.findAllByFistName(firstName);
+        return personRepository.findAllByFirstName(firstName);
     }
 
     /*
@@ -65,14 +66,19 @@ public class PersonController {
      */
     @GetMapping("/by-name/with-fetch-notes")
     public List<Person> getPersonsByNameWithFetchNotes(@RequestParam("firstName") String firstName) {
-        return personRepository.findAllByFistNameFetchNotes(firstName);
+        return personRepository.findAllByFirstNameFetchNotes(firstName);
+    }
+
+    @GetMapping("/with-notes-count")
+    public List<PersonDto> findAllWithNotesCount() {
+        return personRepository.findAllWithNotesCount();
     }
 
 //    @PostConstruct
 //    public void init() {
 //        for (int i = 1; i < 10; i++) {
 //            Person person = new Person();
-//            person.setFistName("FirstName" + i);
+//            person.setFirstName("FirstName" + i);
 //            person.setLastName("LastName" + i);
 //            person.setAge(i);
 //
@@ -91,7 +97,7 @@ public class PersonController {
 //        Random random = new Random();
 //        for (int i = 1; i <= 20; i++) {
 //            Person person = new Person();
-//            person.setFistName(firstNames[random.nextInt(firstNames.length)]);
+//            person.setFirstName(firstNames[random.nextInt(firstNames.length)]);
 //            person.setLastName(lastNames[random.nextInt(lastNames.length)]);
 //            person.setAge(random.nextInt(50) + 18);
 //
